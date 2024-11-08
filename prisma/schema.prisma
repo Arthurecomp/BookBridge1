@@ -1,0 +1,65 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  bookClubs    BookClub[] @relation("UserBookClubs") // Relacionamento de muitos para muitos com BookClub
+  opinions     Opinion[] // Relacionamento de um para muitos com Opinion
+  createdClubs BookClub[] @relation("BookClubCreator") // Relacionamento de um para muitos com BookClub (criador do clube)
+
+  @@map("users")
+}
+
+model BookClub {
+  id          Int    @id @default(autoincrement())
+  name        String
+  description String
+  creatorId   String // ID do criador (referência ao User)
+
+  creator  User      @relation("BookClubCreator", fields: [creatorId], references: [id]) // Relacionamento com o criador
+  books    Book[]    @relation("BookClubBooks")
+  opinions Opinion[] // Relacionamento com as opiniões
+  members  User[]    @relation("UserBookClubs") // Relacionamento de muitos para muitos com User (membros do clube)
+
+  @@map("book_clubs")
+}
+
+model Book {
+  id        Int        @id @default(autoincrement())
+  title     String
+  author    String
+  bookClubs BookClub[] @relation("BookClubBooks") // Relacionamento muitos-para-muitos com BookClub
+  opinions  Opinion[]
+
+  @@map("books")
+}
+
+model Opinion {
+  id         Int      @id @default(autoincrement())
+  content    String
+  userId     String
+  bookId     Int
+  bookClubId Int
+  data       DateTime @default(now())
+
+  user     User     @relation(fields: [userId], references: [id]) // Relacionamento com o usuário
+  book     Book     @relation(fields: [bookId], references: [id]) // Relacionamento com o livro
+  bookClub BookClub @relation(fields: [bookClubId], references: [id]) // Relacionamento com o BookClub
+
+  @@map("opinions")
+}
