@@ -52,6 +52,7 @@ model Book {
 model Opinion {
   id         Int      @id @default(autoincrement())
   content    String
+  rating     Int
   userId     String
   bookId     Int
   bookClubId Int
