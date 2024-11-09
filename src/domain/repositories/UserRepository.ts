@@ -5,4 +5,5 @@ export interface UserRepository {
   list(): Promise<UserEntity[]>;
   delete(id: string): Promise<void>;
   updateName(id: string, name: string): Promise<UserEntity>;
+  findByEmail(email: string): Promise<string>;
 }

@@ -1,4 +1,3 @@
-// src/interfaces/controllers/UserController.ts
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
 import { CreateUser } from "../useCases/Users/CreateUser";
 import { UpdateUserName } from "../useCases/Users/UpdateUserName";
@@ -20,7 +19,7 @@ export class UserController {
   }
 
   registerRoutes(fastify: FastifyInstance) {
-    fastify.post("/users", this.createUserHandler.bind(this)); // Criação de usuário
+    fastify.post("/users", this.createUserHandler.bind(this)); // criar usuários
     fastify.get("/users", this.listUserHandler.bind(this)); // Listar todos os usuários
     fastify.put("/users/:id", this.updateUserNameHandler.bind(this)); // Atualizar nome do usuário
     fastify.delete("/users/:id", this.deleteUserHandler.bind(this)); // Deletar usuário

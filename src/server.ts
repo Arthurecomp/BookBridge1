@@ -1,9 +1,11 @@
 import fastify, { FastifyInstance } from "fastify";
 import { userRoutes } from "./application/routes/userRoutes";
+import { bookClubRoutes } from "./application/routes/bookClubRoutes";
 
 const app: FastifyInstance = fastify();
 
 app.register(userRoutes);
+app.register(bookClubRoutes);
 
 const start = async () => {
   try {

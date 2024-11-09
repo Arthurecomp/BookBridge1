@@ -14,6 +14,7 @@ export class UserPrismaRepository implements UserRepository {
         updatedAt: user.updatedAt,
       },
       include: {
+        opinions: true,
         bookClubs: true,
         createdClubs: true,
       },
@@ -29,6 +30,17 @@ export class UserPrismaRepository implements UserRepository {
       },
     });
     return users;
+  }
+
+  async findByEmail(email: string): Promise<string> {
+    const existingUser = await prisma.user.findUnique({
+      where: { email },
+    });
+    if (!existingUser) {
+      throw new Error(`User with email ${email} not found`);
+    } else {
+      return existingUser.id;
+    }
   }
 
   async delete(id: string): Promise<void> {

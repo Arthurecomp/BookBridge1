@@ -1,38 +1,33 @@
-import { BookClubEntity } from "./BookClubEntity";
-import { OpinionEntity } from "./OpinionEntity";
+import { v4 as uuidv4 } from "uuid";
 
 export class UserEntity {
-  id?: string;
+  id: string;
   name: string;
   email: string;
   password: string;
-  createdAt?: Date;
-  updatedAt?: Date;
+  createdAt: Date;
+  updatedAt: Date;
 
-  // Relacionamentos
-  bookClubs?: BookClubEntity[];
-  opinions?: OpinionEntity[];
-  createdClubs?: BookClubEntity[];
-
-  constructor(
-    id: string,
-    name: string,
-    email: string,
-    password: string,
-    createdAt?: Date,
-    updatedAt?: Date,
-    bookClubs?: BookClubEntity[],
-    opinions?: OpinionEntity[],
-    createdClubs?: BookClubEntity[]
-  ) {
+  constructor({
+    id = uuidv4(),
+    name,
+    email,
+    password,
+    createdAt = new Date(),
+    updatedAt = new Date(),
+  }: {
+    id?: string;
+    name: string;
+    email: string;
+    password: string;
+    createdAt?: Date;
+    updatedAt?: Date;
+  }) {
     this.id = id;
     this.name = name;
     this.email = email;
     this.password = password;
     this.createdAt = createdAt;
     this.updatedAt = updatedAt;
-    this.bookClubs = bookClubs;
-    this.opinions = opinions;
-    this.createdClubs = createdClubs;
   }
 }

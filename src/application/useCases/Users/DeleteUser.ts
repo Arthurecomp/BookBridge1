@@ -1,4 +1,3 @@
-// src/application/useCases/DeleteUser.ts
 import { UserRepository } from "../../../domain/repositories/UserRepository";
 
 export class DeleteUser {
