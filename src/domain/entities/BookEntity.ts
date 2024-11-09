@@ -1,12 +1,17 @@
-import { BookClubEntity } from "./BookClubEntity";
-import { OpinionEntity } from "./OpinionEntity";
-
 export class BookEntity {
-  id: string;
+  id?: number;
   title: string;
   author: string;
 
-  constructor(id: string, title: string, author: string) {
+  constructor({
+    id,
+    title,
+    author,
+  }: {
+    title: string;
+    author: string;
+    id?: number;
+  }) {
     this.id = id;
     this.title = title;
     this.author = author;

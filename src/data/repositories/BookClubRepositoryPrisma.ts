@@ -69,4 +69,27 @@ export class BookClubPrismaRepository implements BookClubRepository {
     });
     return updateBookClub;
   }
+
+  async addBook(id: number, bookId: number): Promise<BookClubEntity> {
+    const updateBookClub = await prisma.bookClub.update({
+      where: { id },
+      data: {
+        books: {
+          connect: { id: bookId },
+        },
+      },
+    });
+    return updateBookClub;
+  }
+  async deleteBook(id: number, bookId: number): Promise<BookClubEntity> {
+    const updateBookClub = await prisma.bookClub.update({
+      where: { id },
+      data: {
+        books: {
+          disconnect: { id: bookId },
+        },
+      },
+    });
+    return updateBookClub;
+  }
 }

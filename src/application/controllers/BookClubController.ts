@@ -6,6 +6,8 @@ import { DeleteBookClub } from "../useCases/Bookclub/DeleteBookClub";
 import { ListBookClub } from "../useCases/Bookclub/ListBookclub";
 import { UpdateClubBookName } from "../useCases/Bookclub/UpdateNameBookClub";
 import { AddMemberClubBook } from "../useCases/Bookclub/AddMemberBookClub";
+import { AddBookToClub } from "../useCases/Bookclub/AddBookToClub";
+import { DeleteBookFromClub } from "../useCases/Bookclub/DeleteBookFromClub";
 
 export class BookClubController {
   private createBookClube: CreateBookClub;
@@ -13,8 +15,12 @@ export class BookClubController {
   private deleteBookClub: DeleteBookClub;
   private updateNameBookClub: UpdateClubBookName;
   private addMemberBookClub: AddMemberClubBook;
+  private addBooktoClub: AddBookToClub;
+  private deleteBookFromClub: DeleteBookFromClub;
 
   constructor(bookClubRepository: BookClubPrismaRepository) {
+    this.deleteBookFromClub = new DeleteBookFromClub(bookClubRepository);
+    this.addBooktoClub = new AddBookToClub(bookClubRepository);
     this.createBookClube = new CreateBookClub(bookClubRepository);
     this.listBookClub = new ListBookClub(bookClubRepository);
     this.deleteBookClub = new DeleteBookClub(bookClubRepository);
@@ -28,6 +34,11 @@ export class BookClubController {
     fastify.put("/bookClub/:id", this.updateBookClubNameHandler.bind(this)); // Atualizar nome do usuário
     fastify.delete("/bookClub/:id", this.deleteUserHandler.bind(this)); // Deletar usuário
     fastify.put("/addMember/:id", this.addMemberHandler.bind(this));
+    fastify.put("/bookClub/:id/addBook", this.addBookHandler.bind(this));
+    fastify.delete(
+      "/bookClub/:id/deleteBook",
+      this.deleteBookHandler.bind(this)
+    );
   }
 
   // Handler para criação de clube de leitura
@@ -113,12 +124,54 @@ export class BookClubController {
       //O PARAMETRO VAI SER O ID DO CLUBE, E NO CORPO DA REQUISIÇÃO VAI SER O ID DO USUÁRIO
       const bookClubId = Number(id);
       const { userId } = request.body;
-
       const updatedUser = await this.addMemberBookClub.execute(
         bookClubId,
         userId
       );
       reply.status(200).send(updatedUser);
+    } catch (error) {
+      console.error(error);
+      reply.status(500).send({ error: "Error updating user" });
+    }
+  }
+
+  async addBookHandler(
+    request: FastifyRequest<{
+      Params: { id: string };
+      Body: { bookId: number };
+    }>,
+    reply: FastifyReply
+  ) {
+    try {
+      const { id } = request.params;
+      //O PARAMETRO VAI SER O ID DO CLUBE, E NO CORPO DA REQUISIÇÃO VAI SER O ID DO USUÁRIO
+      const bookClubId = Number(id);
+      const { bookId } = request.body;
+
+      const updatedBook = await this.addBooktoClub.execute(bookClubId, bookId);
+      reply.status(200).send(updatedBook);
+    } catch (error) {
+      console.error(error);
+      reply.status(500).send({ error: "Error updating user" });
+    }
+  }
+  async deleteBookHandler(
+    request: FastifyRequest<{
+      Params: { id: string };
+      Body: { bookId: number };
+    }>,
+    reply: FastifyReply
+  ) {
+    try {
+      const { id } = request.params;
+      //O PARAMETRO VAI SER O ID DO CLUBE, E NO CORPO DA REQUISIÇÃO VAI SER O ID DO USUÁRIO
+      const bookClubId = Number(id);
+      const { bookId } = request.body;
+      const updatedBook = await this.deleteBookFromClub.execute(
+        bookClubId,
+        bookId
+      );
+      reply.status(200).send(updatedBook);
     } catch (error) {
       console.error(error);
       reply.status(500).send({ error: "Error updating user" });
