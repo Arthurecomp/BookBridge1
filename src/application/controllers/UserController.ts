@@ -1,45 +1,39 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-import { CreateUser } from "../useCases/Users/CreateUser";
+// import { CreateUser } from "../useCases/Users/CreateUser";
 import { UpdateUserName } from "../useCases/Users/UpdateUserName";
 import { DeleteUser } from "../useCases/Users/DeleteUser";
 import { ListUsers } from "../useCases/Users/ListUsers";
 import { UserPrismaRepository } from "../../data/repositories/UserRepositoryPrisma";
+import authMiddleware from "../middlewares/authMiddleware";
 
 export class UserController {
-  private createUser: CreateUser;
+  // private createUser: CreateUser;
   private updateUserName: UpdateUserName;
   private deleteUser: DeleteUser;
   private listUser: ListUsers;
 
   constructor(userRepository: UserPrismaRepository) {
-    this.createUser = new CreateUser(userRepository);
     this.updateUserName = new UpdateUserName(userRepository);
     this.deleteUser = new DeleteUser(userRepository);
     this.listUser = new ListUsers(userRepository);
   }
 
   registerRoutes(fastify: FastifyInstance) {
-    fastify.post("/users", this.createUserHandler.bind(this)); // criar usuários
-    fastify.get("/users", this.listUserHandler.bind(this)); // Listar todos os usuários
-    fastify.put("/users/:id", this.updateUserNameHandler.bind(this)); // Atualizar nome do usuário
-    fastify.delete("/users/:id", this.deleteUserHandler.bind(this)); // Deletar usuário
-  }
-
-  // Handler para criação de usuário
-  async createUserHandler(
-    request: FastifyRequest<{
-      Body: { name: string; email: string; password: string };
-    }>,
-    reply: FastifyReply
-  ) {
-    try {
-      const { name, email, password } = request.body;
-      const user = await this.createUser.execute({ name, email, password });
-      reply.status(201).send(user);
-    } catch (error) {
-      console.error(error);
-      reply.status(400).send({ error: "Error creating user" });
-    }
+    fastify.get(
+      "/users",
+      { preHandler: authMiddleware },
+      this.listUserHandler.bind(this)
+    ); // Listar todos os usuários
+    fastify.put(
+      "/users/:id",
+      { preHandler: authMiddleware },
+      this.updateUserNameHandler.bind(this)
+    ); // Atualizar nome do usuário
+    fastify.delete(
+      "/users/:id",
+      { preHandler: authMiddleware },
+      this.deleteUserHandler.bind(this)
+    ); // Deletar usuário
   }
 
   //listar todos os usuários
@@ -54,13 +48,10 @@ export class UserController {
   }
 
   //atualizar nome de usuário
-  async updateUserNameHandler(
-    request: FastifyRequest<{ Params: { id: string }; Body: { name: string } }>,
-    reply: FastifyReply
-  ) {
+  async updateUserNameHandler(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const { id } = request.params;
-      const { name } = request.body;
+      const { id } = request.params as { id: string }; // Agora o TypeScript sabe que `params` tem um campo `id` do tipo string
+      const { name } = request.body as { name: string };
       if (!name) {
         return reply.status(400).send({ error: "Name is required" });
       }
@@ -73,12 +64,9 @@ export class UserController {
   }
 
   //deletar usuário
-  async deleteUserHandler(
-    request: FastifyRequest<{ Params: { id: string } }>,
-    reply: FastifyReply
-  ) {
+  async deleteUserHandler(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const { id } = request.params;
+      const { id } = request.params as { id: string };
       await this.deleteUser.execute(id);
       reply.status(200).send({ message: "User deleted successfully" });
     } catch (error) {

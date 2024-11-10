@@ -8,6 +8,7 @@ import { UpdateClubBookName } from "../useCases/Bookclub/UpdateNameBookClub";
 import { AddMemberClubBook } from "../useCases/Bookclub/AddMemberBookClub";
 import { AddBookToClub } from "../useCases/Bookclub/AddBookToClub";
 import { DeleteBookFromClub } from "../useCases/Bookclub/DeleteBookFromClub";
+import authMiddleware from "../middlewares/authMiddleware";
 
 export class BookClubController {
   private createBookClube: CreateBookClub;
@@ -29,27 +30,49 @@ export class BookClubController {
   }
 
   registerRoutes(fastify: FastifyInstance) {
-    fastify.post("/bookClub", this.createBookClubHandler.bind(this)); // criar usuários
-    fastify.get("/bookClub", this.listBookClubHandler.bind(this)); // Listar todos os usuários
-    fastify.put("/bookClub/:id", this.updateBookClubNameHandler.bind(this)); // Atualizar nome do usuário
-    fastify.delete("/bookClub/:id", this.deleteUserHandler.bind(this)); // Deletar usuário
-    fastify.put("/addMember/:id", this.addMemberHandler.bind(this));
-    fastify.put("/bookClub/:id/addBook", this.addBookHandler.bind(this));
+    fastify.post(
+      "/bookClub",
+      { preHandler: authMiddleware },
+      this.createBookClubHandler.bind(this)
+    ); // criar usuários
+    fastify.get(
+      "/bookClub",
+      { preHandler: authMiddleware },
+      this.listBookClubHandler.bind(this)
+    ); // Listar todos os usuários
+    fastify.put(
+      "/bookClub/:id",
+      { preHandler: authMiddleware },
+      this.updateBookClubNameHandler.bind(this)
+    ); // Atualizar nome do usuário
+    fastify.delete(
+      "/bookClub/:id",
+      { preHandler: authMiddleware },
+      this.deleteUserHandler.bind(this)
+    ); // Deletar usuário
+    fastify.put(
+      "/addMember/:id",
+      { preHandler: authMiddleware },
+      this.addMemberHandler.bind(this)
+    );
+    fastify.put(
+      "/bookClub/:id/addBook",
+      { preHandler: authMiddleware },
+      this.addBookHandler.bind(this)
+    );
     fastify.delete(
       "/bookClub/:id/deleteBook",
+      { preHandler: authMiddleware },
       this.deleteBookHandler.bind(this)
     );
   }
 
   // Handler para criação de clube de leitura
-  async createBookClubHandler(
-    request: FastifyRequest<{
-      Body: { name: string; description: string; creatorId: string };
-    }>,
-    reply: FastifyReply
-  ) {
+  async createBookClubHandler(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const { name, description, creatorId } = request.body;
+      const { name } = request.body as { name: string };
+      const { description } = request.body as { description: string };
+      const { creatorId } = request.body as { creatorId: string };
       const bookClub = await this.createBookClube.execute({
         name,
         description,
@@ -75,12 +98,9 @@ export class BookClubController {
   }
 
   //deletar club de leitura
-  async deleteUserHandler(
-    request: FastifyRequest<{ Params: { id: string } }>,
-    reply: FastifyReply
-  ) {
+  async deleteUserHandler(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const { id } = request.params;
+      const { id } = request.params as { id: string };
       const bookClubId = Number(id);
       await this.deleteBookClub.execute(bookClubId);
       reply.status(200).send({ message: "Book Club deleted successfully" });
@@ -91,13 +111,13 @@ export class BookClubController {
   }
 
   async updateBookClubNameHandler(
-    request: FastifyRequest<{ Params: { id: string }; Body: { name: string } }>,
+    request: FastifyRequest,
     reply: FastifyReply
   ) {
     try {
-      const { id } = request.params;
+      const { id } = request.params as { id: string };
       const bookClubId = Number(id);
-      const { name } = request.body;
+      const { name } = request.body as { name: string };
       if (!name) {
         return reply.status(400).send({ error: "Name is required" });
       }
@@ -112,18 +132,12 @@ export class BookClubController {
     }
   }
 
-  async addMemberHandler(
-    request: FastifyRequest<{
-      Params: { id: string };
-      Body: { userId: string };
-    }>,
-    reply: FastifyReply
-  ) {
+  async addMemberHandler(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const { id } = request.params;
+      const { id } = request.params as { id: string };
       //O PARAMETRO VAI SER O ID DO CLUBE, E NO CORPO DA REQUISIÇÃO VAI SER O ID DO USUÁRIO
       const bookClubId = Number(id);
-      const { userId } = request.body;
+      const { userId } = request.body as { userId: string };
       const updatedUser = await this.addMemberBookClub.execute(
         bookClubId,
         userId
@@ -135,18 +149,12 @@ export class BookClubController {
     }
   }
 
-  async addBookHandler(
-    request: FastifyRequest<{
-      Params: { id: string };
-      Body: { bookId: number };
-    }>,
-    reply: FastifyReply
-  ) {
+  async addBookHandler(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const { id } = request.params;
+      const { id } = request.params as { id: string };
       //O PARAMETRO VAI SER O ID DO CLUBE, E NO CORPO DA REQUISIÇÃO VAI SER O ID DO USUÁRIO
       const bookClubId = Number(id);
-      const { bookId } = request.body;
+      const { bookId } = request.body as { bookId: number };
 
       const updatedBook = await this.addBooktoClub.execute(bookClubId, bookId);
       reply.status(200).send(updatedBook);
@@ -155,18 +163,12 @@ export class BookClubController {
       reply.status(500).send({ error: "Error updating user" });
     }
   }
-  async deleteBookHandler(
-    request: FastifyRequest<{
-      Params: { id: string };
-      Body: { bookId: number };
-    }>,
-    reply: FastifyReply
-  ) {
+  async deleteBookHandler(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const { id } = request.params;
+      const { id } = request.params as { id: string };
       //O PARAMETRO VAI SER O ID DO CLUBE, E NO CORPO DA REQUISIÇÃO VAI SER O ID DO USUÁRIO
       const bookClubId = Number(id);
-      const { bookId } = request.body;
+      const { bookId } = request.body as { bookId: number };
       const updatedBook = await this.deleteBookFromClub.execute(
         bookClubId,
         bookId

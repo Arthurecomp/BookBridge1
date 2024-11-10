@@ -1,5 +1,5 @@
 import { FastifyInstance, FastifyRequest, FastifyReply } from "fastify";
-
+import authMiddleware from "../middlewares/authMiddleware";
 import { CreateBook } from "../useCases/Book/CreateBook";
 import { BookRepositoryPrisma } from "../../data/repositories/BookRepositoryPrisma";
 
@@ -11,18 +11,18 @@ export class BookController {
   }
 
   registerRoutes(fastify: FastifyInstance) {
-    fastify.post("/book", this.createBookHandler.bind(this)); // criar usuários
+    fastify.post(
+      "/book",
+      { preHandler: authMiddleware },
+      this.createBookHandler.bind(this)
+    ); // criar usuários
   }
 
   // Handler para criação de usuário
-  async createBookHandler(
-    request: FastifyRequest<{
-      Body: { title: string; author: string };
-    }>,
-    reply: FastifyReply
-  ) {
+  async createBookHandler(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const { title, author } = request.body;
+      const { title } = request.body as { title: string }; // Agora o TypeScript sabe que `params` tem um campo `id` do tipo string
+      const { author } = request.body as { author: string };
       const book = await this.createBook.execute({ title, author });
       reply.status(201).send(book);
     } catch (error) {
