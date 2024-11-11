@@ -125,3 +125,5 @@
 [16:13:00.466] [32mINFO[39m (15816): [36mServer listening at http://127.0.0.1:3100[39m
 [16:13:24.511] [32mINFO[39m (14216): [36mServer listening at http://[::1]:3100[39m
 [16:13:24.525] [32mINFO[39m (14216): [36mServer listening at http://127.0.0.1:3100[39m
+[16:15:27.041] [32mINFO[39m (10536): [36mServer listening at http://[::1]:3100[39m
+[16:15:27.046] [32mINFO[39m (10536): [36mServer listening at http://127.0.0.1:3100[39m

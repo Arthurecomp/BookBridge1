@@ -9,6 +9,7 @@ import { AddMemberClubBook } from "../useCases/Bookclub/AddMemberBookClub";
 import { AddBookToClub } from "../useCases/Bookclub/AddBookToClub";
 import { DeleteBookFromClub } from "../useCases/Bookclub/DeleteBookFromClub";
 import authMiddleware from "../middlewares/authMiddleware";
+import { getCachedData } from "../../service/cacheService";
 
 export class BookClubController {
   private createBookClube: CreateBookClub;
@@ -95,7 +96,12 @@ export class BookClubController {
       request.log.info(
         "Solicitação recebida para listar todos os clubes de leitura"
       );
-      const bookClubs = await this.listBookClub.execute();
+      const cachKey = "bookClubs";
+
+      const bookClubs = await getCachedData(cachKey, async () => {
+        return this.listBookClub.execute();
+      });
+
       request.log.info(
         `Foram encontrados ${bookClubs.length} clubes de leitura`
       );

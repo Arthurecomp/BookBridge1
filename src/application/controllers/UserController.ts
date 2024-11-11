@@ -72,9 +72,10 @@ export class UserController {
     try {
       const { id } = request.params as { id: string };
       await this.deleteUser.execute(id);
+      request.log.info(`Usuario ${id} foi deletado`);
       reply.status(200).send({ message: "User deleted successfully" });
     } catch (error) {
-      console.error(error);
+      request.log.info(`Usuario nao foi deletado`);
       reply.status(500).send({ error: error || "USER NOT  FOUND" });
     }
   }
