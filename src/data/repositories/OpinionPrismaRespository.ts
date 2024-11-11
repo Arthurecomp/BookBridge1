@@ -33,4 +33,17 @@ export class OpinionPrismaRepository implements OpinionRepository {
 
     return deletedOpinion;
   }
+
+  async averageRating(bookId: number): Promise<number> {
+    const averageRating = await prisma.opinion.aggregate({
+      where: {
+        bookId: bookId,
+      },
+      _avg: {
+        rating: true,
+      },
+    });
+
+    return averageRating._avg.rating || 0;
+  }
 }

@@ -2,11 +2,14 @@ import { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import { OpinionRepository } from "../../domain/repositories/OpinionRepository";
 import { CreateOpinion } from "../useCases/Opinion/CreateOpinion";
 import authMiddleware from "../middlewares/authMiddleware";
+import { AverageOpinion } from "../useCases/Opinion/AverageOpinion";
 
 export class OpinionController {
   private createOpinon: CreateOpinion;
+  private averageRating: AverageOpinion;
   constructor(opinionRepository: OpinionRepository) {
     this.createOpinon = new CreateOpinion(opinionRepository);
+    this.averageRating = new AverageOpinion(opinionRepository);
   }
 
   registerRoutes(fastify: FastifyInstance) {
@@ -14,14 +17,33 @@ export class OpinionController {
       "/opinion",
       { preHandler: authMiddleware },
       this.createOpinionHandler.bind(this)
-    ); // criar usuários
+    );
+    fastify.get(
+      "/opinionAverage/:bookId",
+      { preHandler: authMiddleware },
+      this.averageRatingHandler.bind(this)
+    );
+  }
+
+  async averageRatingHandler(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const { bookId } = request.params as { bookId: string }; // bookId como string
+      const bookIdNumber = Number(bookId); // Convertendo para número
+
+      const opinion = await this.averageRating.execute(bookIdNumber);
+
+      reply.status(201).send(opinion);
+    } catch (error) {
+      console.error(error);
+      reply.status(400).send({ error: "Error creating opinion" });
+    }
   }
 
   async createOpinionHandler(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const { content } = request.body as { content: string }; // Agora o TypeScript sabe que `params` tem um campo `id` do tipo string
+      const { content } = request.body as { content: string };
       const { rating } = request.body as { rating: number };
-      const { userId } = request.body as { userId: string }; // Agora o TypeScript sabe que `params` tem um campo `id` do tipo string
+      const { userId } = request.body as { userId: string };
       const { bookId } = request.body as { bookId: number };
 
       const book = await this.createOpinon.execute({
@@ -33,9 +55,7 @@ export class OpinionController {
       reply.status(201).send(book);
     } catch (error) {
       console.error(error);
-      reply.status(400).send({ error: "Error creating user" });
+      reply.status(400).send({ error: "Error creating opinion" });
     }
   }
 }
-
-// Handler para criação de usuário
