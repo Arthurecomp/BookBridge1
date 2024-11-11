@@ -34,22 +34,22 @@ export class BookClubController {
       "/bookClub",
       { preHandler: authMiddleware },
       this.createBookClubHandler.bind(this)
-    ); // criar usuários
+    );
     fastify.get(
       "/bookClub",
       { preHandler: authMiddleware },
       this.listBookClubHandler.bind(this)
-    ); // Listar todos os usuários
+    );
     fastify.put(
       "/bookClub/:id",
       { preHandler: authMiddleware },
       this.updateBookClubNameHandler.bind(this)
-    ); // Atualizar nome do usuário
+    );
     fastify.delete(
       "/bookClub/:id",
       { preHandler: authMiddleware },
       this.deleteUserHandler.bind(this)
-    ); // Deletar usuário
+    );
     fastify.put(
       "/addMember/:id",
       { preHandler: authMiddleware },
@@ -70,46 +70,64 @@ export class BookClubController {
   // Handler para criação de clube de leitura
   async createBookClubHandler(request: FastifyRequest, reply: FastifyReply) {
     try {
-      const { name } = request.body as { name: string };
-      const { description } = request.body as { description: string };
-      const { creatorId } = request.body as { creatorId: string };
+      const { name, description, creatorId } = request.body as {
+        name: string;
+        description: string;
+        creatorId: string;
+      };
+      request.log.info(`Tentando criar clube de leitura com nome: ${name}`);
       const bookClub = await this.createBookClube.execute({
         name,
         description,
         creatorId,
       });
-      console.log("oi");
+      request.log.info(`Clube de leitura criado com sucesso: ${bookClub.name}`);
       reply.status(201).send(bookClub);
     } catch (error) {
-      console.error(error);
-      reply.status(400).send({ error: "Error creating book club" });
+      request.log.error(`Erro ao criar clube de leitura: ${error}`);
+      reply.status(400).send({ error: "Erro ao criar o clube de leitura" });
     }
   }
 
-  //listar todos os clubes de leitura
+  // Listar todos os clubes de leitura
   async listBookClubHandler(request: FastifyRequest, reply: FastifyReply) {
     try {
+      request.log.info(
+        "Solicitação recebida para listar todos os clubes de leitura"
+      );
       const bookClubs = await this.listBookClub.execute();
+      request.log.info(
+        `Foram encontrados ${bookClubs.length} clubes de leitura`
+      );
       reply.status(200).send(bookClubs);
     } catch (error) {
-      console.error(error);
-      reply.status(500).send({ error: "Error retrieving users" });
+      request.log.error(`Erro ao listar clubes de leitura: ${error}`);
+      reply
+        .status(500)
+        .send({ error: "Erro ao recuperar os clubes de leitura" });
     }
   }
 
-  //deletar club de leitura
+  // Deletar clube de leitura
   async deleteUserHandler(request: FastifyRequest, reply: FastifyReply) {
     try {
       const { id } = request.params as { id: string };
       const bookClubId = Number(id);
+      request.log.info(
+        `Tentando deletar o clube de leitura com id: ${bookClubId}`
+      );
       await this.deleteBookClub.execute(bookClubId);
-      reply.status(200).send({ message: "Book Club deleted successfully" });
+      request.log.info(`Clube de leitura ${bookClubId} deletado com sucesso`);
+      reply
+        .status(200)
+        .send({ message: "Clube de leitura deletado com sucesso" });
     } catch (error) {
-      console.error(error);
-      reply.status(500).send({ error: error || "Book Club NOT  FOUND" });
+      request.log.error(`Erro ao deletar clube de leitura  ${error}`);
+      reply.status(500).send({ error: "Clube de leitura não encontrado" });
     }
   }
 
+  // Atualizar nome do clube de leitura
   async updateBookClubNameHandler(
     request: FastifyRequest,
     reply: FastifyReply
@@ -119,64 +137,106 @@ export class BookClubController {
       const bookClubId = Number(id);
       const { name } = request.body as { name: string };
       if (!name) {
-        return reply.status(400).send({ error: "Name is required" });
+        request.log.warn(
+          "Nome é obrigatório para atualizar o clube de leitura"
+        );
+        return reply.status(400).send({ error: "Nome é obrigatório" });
       }
-      const updatedUser = await this.updateNameBookClub.execute(
+      request.log.info(
+        `Atualizando nome do clube de leitura ${bookClubId} para: ${name}`
+      );
+      const updatedBookClub = await this.updateNameBookClub.execute(
         bookClubId,
         name
       );
-      reply.status(200).send(updatedUser);
+      request.log.info(
+        `Nome do clube de leitura ${bookClubId} atualizado com sucesso`
+      );
+      reply.status(200).send(updatedBookClub);
     } catch (error) {
-      console.error(error);
-      reply.status(500).send({ error: "Error updating user" });
+      request.log.error(
+        `Erro ao atualizar o nome do clube de leitura ${error}`
+      );
+      reply.status(500).send({ error: "Erro ao atualizar o clube de leitura" });
     }
   }
 
+  // Adicionar membro ao clube de leitura
   async addMemberHandler(request: FastifyRequest, reply: FastifyReply) {
     try {
       const { id } = request.params as { id: string };
-      //O PARAMETRO VAI SER O ID DO CLUBE, E NO CORPO DA REQUISIÇÃO VAI SER O ID DO USUÁRIO
       const bookClubId = Number(id);
       const { userId } = request.body as { userId: string };
-      const updatedUser = await this.addMemberBookClub.execute(
+      request.log.info(
+        `Tentando adicionar o usuário ${userId} ao clube de leitura ${bookClubId}`
+      );
+      const updatedBookClub = await this.addMemberBookClub.execute(
         bookClubId,
         userId
       );
-      reply.status(200).send(updatedUser);
+      request.log.info(
+        `Usuário ${userId} adicionado ao clube de leitura ${bookClubId}`
+      );
+      reply.status(200).send(updatedBookClub);
     } catch (error) {
-      console.error(error);
-      reply.status(500).send({ error: "Error updating user" });
+      request.log.error(
+        `Erro ao adicionar usuário ao clube de leitura: ${error}`
+      );
+      reply
+        .status(500)
+        .send({ error: "Erro ao adicionar membro ao clube de leitura" });
     }
   }
 
+  // Adicionar livro ao clube de leitura
   async addBookHandler(request: FastifyRequest, reply: FastifyReply) {
     try {
       const { id } = request.params as { id: string };
-      //O PARAMETRO VAI SER O ID DO CLUBE, E NO CORPO DA REQUISIÇÃO VAI SER O ID DO USUÁRIO
       const bookClubId = Number(id);
       const { bookId } = request.body as { bookId: number };
-
-      const updatedBook = await this.addBooktoClub.execute(bookClubId, bookId);
-      reply.status(200).send(updatedBook);
-    } catch (error) {
-      console.error(error);
-      reply.status(500).send({ error: "Error updating user" });
-    }
-  }
-  async deleteBookHandler(request: FastifyRequest, reply: FastifyReply) {
-    try {
-      const { id } = request.params as { id: string };
-      //O PARAMETRO VAI SER O ID DO CLUBE, E NO CORPO DA REQUISIÇÃO VAI SER O ID DO USUÁRIO
-      const bookClubId = Number(id);
-      const { bookId } = request.body as { bookId: number };
-      const updatedBook = await this.deleteBookFromClub.execute(
+      request.log.info(
+        `Tentando adicionar o livro ${bookId} ao clube de leitura ${bookClubId}`
+      );
+      const updatedBookClub = await this.addBooktoClub.execute(
         bookClubId,
         bookId
       );
-      reply.status(200).send(updatedBook);
+      request.log.info(
+        `Livro ${bookId} adicionado ao clube de leitura ${bookClubId}`
+      );
+      reply.status(200).send(updatedBookClub);
     } catch (error) {
-      console.error(error);
-      reply.status(500).send({ error: "Error updating user" });
+      request.log.error(
+        `Erro ao adicionar livro ao clube de leitura: ${error}`
+      );
+      reply
+        .status(500)
+        .send({ error: "Erro ao adicionar livro ao clube de leitura" });
+    }
+  }
+
+  // Deletar livro do clube de leitura
+  async deleteBookHandler(request: FastifyRequest, reply: FastifyReply) {
+    try {
+      const { id } = request.params as { id: string };
+      const bookClubId = Number(id);
+      const { bookId } = request.body as { bookId: number };
+      request.log.info(
+        `Tentando deletar o livro ${bookId} do clube de leitura ${bookClubId}`
+      );
+      const updatedBookClub = await this.deleteBookFromClub.execute(
+        bookClubId,
+        bookId
+      );
+      request.log.info(
+        `Livro ${bookId} deletado do clube de leitura ${bookClubId}`
+      );
+      reply.status(200).send(updatedBookClub);
+    } catch (error) {
+      request.log.error(`Erro ao deletar livro do clube de leitura`);
+      reply
+        .status(500)
+        .send({ error: "Erro ao deletar livro do clube de leitura" });
     }
   }
 }

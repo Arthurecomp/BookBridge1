@@ -13,8 +13,8 @@ export class AuthController {
   }
 
   registerRoutes(fastify: FastifyInstance) {
-    fastify.post("/login", this.loginHandler.bind(this)); // Usando POST para login
-    fastify.post("/registerUser", this.createUserHandler.bind(this)); // criar usuários
+    fastify.post("/login", this.loginHandler.bind(this));
+    fastify.post("/registerUser", this.createUserHandler.bind(this));
   }
 
   async loginHandler(request: FastifyRequest, reply: FastifyReply) {
@@ -24,7 +24,7 @@ export class AuthController {
         password: string;
       };
       const token = await this.loginUseCase.execute(email, password);
-      console.log("ok");
+      request.log.info(`Login do ${email} realizado com sucesso`);
       return reply.send({ token });
     } catch (error) {
       if (error === "User not found") {
@@ -33,6 +33,7 @@ export class AuthController {
       if (error === "Wrong password") {
         return reply.status(401).send({ error: "Wrong password" });
       }
+      request.log.info(`Login nao realizado`);
       return reply.status(500).send({ error: "Internal Server Error" });
     }
   }
@@ -46,9 +47,11 @@ export class AuthController {
     try {
       const { name, email, password } = request.body;
       const user = await this.createUser.execute({ name, email, password });
+      request.log.info(`Criado com sucesso: ${name}, ${email}`);
       reply.status(201).send(user);
     } catch (error) {
       console.error(error);
+      request.log.info(`Usuario nao criado: ${error}`);
       reply.status(400).send({ error: "Error creating user" });
     }
   }

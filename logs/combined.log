@@ -1,0 +1,127 @@
+[16:07:01.835] [32mINFO[39m (10752): [36mServer listening at http://[::1]:3100[39m
+[16:07:01.842] [32mINFO[39m (10752): [36mServer listening at http://127.0.0.1:3100[39m
+[16:07:31.785] [32mINFO[39m (10752): [36mincoming request[39m
+    reqId: "req-1"
+    req: {
+      "method": "GET",
+      "url": "/users",
+      "host": "localhost:3100",
+      "remoteAddress": "::1",
+      "remotePort": 52230
+    }
+[16:07:31.790] [32mINFO[39m (10752): [36mrequest completed[39m
+    reqId: "req-1"
+    res: {
+      "statusCode": 401
+    }
+    responseTime: 4.3453000001609325
+[16:08:51.935] [32mINFO[39m (10752): [36mincoming request[39m
+    reqId: "req-2"
+    req: {
+      "method": "POST",
+      "url": "/registerUser",
+      "host": "localhost:3100",
+      "remoteAddress": "::1",
+      "remotePort": 52246
+    }
+[16:08:51.937] [32mINFO[39m (10752): [36mExpected ',' or '}' after property value in JSON at position 58[39m
+    reqId: "req-2"
+    res: {
+      "statusCode": 400
+    }
+    err: {
+      "type": "SyntaxError",
+      "message": "Expected ',' or '}' after property value in JSON at position 58",
+      "stack":
+          SyntaxError: Expected ',' or '}' after property value in JSON at position 58
+      "statusCode": 400
+    }
+[16:08:51.938] [32mINFO[39m (10752): [36mrequest completed[39m
+    reqId: "req-2"
+    res: {
+      "statusCode": 400
+    }
+    responseTime: 3.399100000038743
+[16:09:09.617] [32mINFO[39m (10752): [36mincoming request[39m
+    reqId: "req-3"
+    req: {
+      "method": "POST",
+      "url": "/registerUser",
+      "host": "localhost:3100",
+      "remoteAddress": "::1",
+      "remotePort": 52246
+    }
+[16:09:09.617] [32mINFO[39m (10752): [36mExpected ',' or '}' after property value in JSON at position 68[39m
+    reqId: "req-3"
+    res: {
+      "statusCode": 400
+    }
+    err: {
+      "type": "SyntaxError",
+      "message": "Expected ',' or '}' after property value in JSON at position 68",
+      "stack":
+          SyntaxError: Expected ',' or '}' after property value in JSON at position 68
+      "statusCode": 400
+    }
+[16:09:09.618] [32mINFO[39m (10752): [36mrequest completed[39m
+    reqId: "req-3"
+    res: {
+      "statusCode": 400
+    }
+    responseTime: 0.859400000423193
+[16:09:55.687] [32mINFO[39m (10752): [36mincoming request[39m
+    reqId: "req-4"
+    req: {
+      "method": "POST",
+      "url": "/registerUser",
+      "host": "localhost:3100",
+      "remoteAddress": "::1",
+      "remotePort": 52246
+    }
+[16:09:55.688] [32mINFO[39m (10752): [36mExpected ',' or '}' after property value in JSON at position 68[39m
+    reqId: "req-4"
+    res: {
+      "statusCode": 400
+    }
+    err: {
+      "type": "SyntaxError",
+      "message": "Expected ',' or '}' after property value in JSON at position 68",
+      "stack":
+          SyntaxError: Expected ',' or '}' after property value in JSON at position 68
+      "statusCode": 400
+    }
+[16:09:55.688] [32mINFO[39m (10752): [36mrequest completed[39m
+    reqId: "req-4"
+    res: {
+      "statusCode": 400
+    }
+    responseTime: 0.6009999997913837
+[16:10:04.917] [32mINFO[39m (10752): [36mincoming request[39m
+    reqId: "req-5"
+    req: {
+      "method": "POST",
+      "url": "/registerUser",
+      "host": "localhost:3100",
+      "remoteAddress": "::1",
+      "remotePort": 52246
+    }
+[16:10:06.269] [32mINFO[39m (10752): [36mCriado com sucesso: arthur, melhoremail@gmail.com[39m
+    reqId: "req-5"
+[16:10:06.269] [32mINFO[39m (10752): [36mrequest completed[39m
+    reqId: "req-5"
+    res: {
+      "statusCode": 201
+    }
+    responseTime: 1352.508299998939
+[16:10:58.993] [32mINFO[39m (15208): [36mServer listening at http://[::1]:3100[39m
+[16:10:59.006] [32mINFO[39m (15208): [36mServer listening at http://127.0.0.1:3100[39m
+[16:12:28.521] [32mINFO[39m (15996): [36mServer listening at http://[::1]:3100[39m
+[16:12:28.527] [32mINFO[39m (15996): [36mServer listening at http://127.0.0.1:3100[39m
+[16:12:36.940] [32mINFO[39m (6256): [36mServer listening at http://[::1]:3100[39m
+[16:12:36.945] [32mINFO[39m (6256): [36mServer listening at http://127.0.0.1:3100[39m
+[16:12:49.639] [32mINFO[39m (3976): [36mServer listening at http://[::1]:3100[39m
+[16:12:49.644] [32mINFO[39m (3976): [36mServer listening at http://127.0.0.1:3100[39m
+[16:13:00.461] [32mINFO[39m (15816): [36mServer listening at http://[::1]:3100[39m
+[16:13:00.466] [32mINFO[39m (15816): [36mServer listening at http://127.0.0.1:3100[39m
+[16:13:24.511] [32mINFO[39m (14216): [36mServer listening at http://[::1]:3100[39m
+[16:13:24.525] [32mINFO[39m (14216): [36mServer listening at http://127.0.0.1:3100[39m

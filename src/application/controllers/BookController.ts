@@ -23,6 +23,7 @@ export class BookController {
     try {
       const { title } = request.body as { title: string }; // Agora o TypeScript sabe que `params` tem um campo `id` do tipo string
       const { author } = request.body as { author: string };
+      request.log.info("iniciando criação de livro");
       const book = await this.createBook.execute({ title, author });
       reply.status(201).send(book);
     } catch (error) {

@@ -5,7 +5,17 @@ import { bookRoutes } from "./application/routes/bookRoutes";
 import { opinionRoutes } from "./application/routes/opinionRoutes";
 import { authRoutes } from "./application/routes/authRoutes";
 
-const app: FastifyInstance = fastify();
+const app: FastifyInstance = fastify({
+  logger: {
+    level: "info",
+    transport: {
+      target: "pino-pretty",
+      options: {
+        destination: "./logs/combined.log",
+      },
+    },
+  },
+});
 
 app.register(userRoutes);
 app.register(bookClubRoutes);

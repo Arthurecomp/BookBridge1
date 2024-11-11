@@ -38,11 +38,13 @@ export class UserController {
 
   //listar todos os usuários
   async listUserHandler(request: FastifyRequest, reply: FastifyReply) {
+    request.log.info("Requsicao da lista de usuarios");
     try {
       const users = await this.listUser.execute();
+      request.log.info(`Recebimento de ${users.length} users`);
       reply.status(200).send(users);
     } catch (error) {
-      console.error(error);
+      request.log.info(`Erro no recebimento dos usuários: ${error}`);
       reply.status(500).send({ error: "Error retrieving users" });
     }
   }
@@ -55,10 +57,12 @@ export class UserController {
       if (!name) {
         return reply.status(400).send({ error: "Name is required" });
       }
+
       const updatedUser = await this.updateUserName.execute(id, name);
+      request.log.info(`Usuário ${id} foi atualizado com sucesso`);
       reply.status(200).send(updatedUser);
     } catch (error) {
-      console.error(error);
+      request.log.info(`Usuário não foi atualizado: ${error}`);
       reply.status(500).send({ error: "Error updating user" });
     }
   }
