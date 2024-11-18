@@ -75,4 +75,3 @@ A aplicação segue o padrão de **Arquitetura Limpa** (Clean Architecture), div
 ### 2. Intale as dependencias --- npm install
 ### 3. Rode a aplicação --- npm run dev
 
-https://www.youtube.com/watch?v=vNNyUdF3sbw vídeo de apresentação do projeto
